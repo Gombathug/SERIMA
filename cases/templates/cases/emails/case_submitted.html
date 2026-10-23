@@ -1,0 +1,6 @@
+{% load i18n %}
+<p>{% blocktranslate with name=case.submitter_name %}Dear {{ name }},{% endblocktranslate %}</p>
+<p>
+  {% blocktranslate with reference=case.reference form=case.form regulator=case.regulator %}Your case {{ reference }} ({{ form }}) has been received by {{ regulator }}.{% endblocktranslate %}
+</p>
+<p>{% translate "You can follow it and add information here:" %} <a href="{{ case_url }}">{{ case_url }}</a></p>

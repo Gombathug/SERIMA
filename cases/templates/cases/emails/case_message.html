@@ -1,0 +1,7 @@
+{% load i18n %}
+<p>
+  {% blocktranslate with reference=case.reference status=case.get_status_display %}Case {{ reference }} has been updated. Current status: {{ status }}.{% endblocktranslate %}
+</p>
+{% if message.text %}<blockquote>{{ message.text|linebreaksbr }}</blockquote>{% endif %}
+{% if message.attachment %}<p>{% translate "A file has been attached." %}</p>{% endif %}
+<p><a href="{{ case_url }}">{{ case_url }}</a></p>

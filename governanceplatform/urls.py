@@ -76,6 +76,8 @@ urlpatterns = [
     ),
     # Incident notification
     path("incidents/", include("incidents.urls"), name="incidents"),
+    # Case management
+    path("cases/", include("cases.urls")),
     # Report Wizard
     path("reporting/", include("reporting.urls"), name="reporting"),
     # Security objectives

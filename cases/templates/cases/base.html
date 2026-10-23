@@ -1,0 +1,21 @@
+{% extends "home/base.html" %}
+{% load i18n %}
+{% load static %}
+{% block title %}
+  {{ current_module }}
+{% endblock %}
+{% block subheader %}
+  <div class="container-fluid d-flex bg-light py-4 align-items-center mb-4">
+    <div class="d-inline-flex me-auto gap-2">
+      <img src="{% static 'images/icons/ico-cases.svg' %}" alt="" class="w-7">
+      <h2 class="fw-bolder mb-0">{{ current_module|upper }}</h2>
+    </div>
+    <nav class="d-flex align-items-center gap-4 pe-2"
+         aria-label="{% translate 'Case management menu' %}">
+      <a class="fw-bold spinner-trigger" href="{% url 'cases' %}">{% translate "Overview" %}</a>
+      {% if can_submit %}
+        <a class="btn btn-primary" href="{% url 'choose_case_form' %}">{% translate "Submit a case" %}</a>
+      {% endif %}
+    </nav>
+  </div>
+{% endblock %}

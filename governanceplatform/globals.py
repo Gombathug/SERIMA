@@ -24,6 +24,12 @@ ACTION_FLAG_CHOICES = {
     EXPORT: _("Export"),
 }
 
+# Modules every role gets without a Functionality; settings.BASE_MODULES picks which are on
+BASE_MODULES = {
+    "incidents": _("Incident notification"),
+    "cases": _("Case management"),
+}
+
 # Functionalities list
 FUNCTIONALITIES = {
     "securityobjectives": _("Security Objective"),

@@ -7,6 +7,7 @@ from django.urls import resolve, reverse
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
+from governanceplatform.globals import BASE_MODULES
 from governanceplatform.helpers import (
     is_observer_user,
     is_user_operator,
@@ -108,6 +109,7 @@ class RestrictViewsMiddleware:
                 if (
                     request.path == reverse("index")
                     or request.path.startswith("/incidents/")
+                    or request.path.startswith("/cases/")
                     or request.path.startswith("/securityobjectives/")
                     or request.path.startswith("/reporting/")
                 ):
@@ -200,6 +202,9 @@ class CheckFunctionalityAccessMiddleware:
         if module == "admin":
             # The admin catch-all view has no url_name.
             module = resolver.kwargs.get("app_label", (resolver.url_name or "").split("_", 1)[0])
+
+        if module in BASE_MODULES and module not in settings.BASE_MODULES:
+            raise Http404()
 
         if Functionality.objects.filter(type=module).exists() and module not in user.get_module_permissions():
             raise Http404()

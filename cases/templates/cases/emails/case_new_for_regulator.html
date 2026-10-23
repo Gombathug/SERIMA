@@ -1,0 +1,5 @@
+{% load i18n %}
+<p>
+  {% blocktranslate with reference=case.reference form=case.form name=case.submitter_name %}A new case {{ reference }} ({{ form }}) has been submitted by {{ name }}.{% endblocktranslate %}
+</p>
+<p><a href="{{ case_url }}">{{ case_url }}</a></p>

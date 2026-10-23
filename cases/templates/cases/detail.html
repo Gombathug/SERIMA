@@ -1,0 +1,137 @@
+{% extends "cases/base.html" %}
+{% load i18n %}
+{% load django_bootstrap5 %}
+{% block content %}
+  <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+    <div class="me-auto">
+      <h3 class="fw-bolder mb-0">{% translate "Case" %} {{ case.reference }}</h3>
+      <div class="hr-separator">
+      </div>
+    </div>
+    {% include "cases/status_badge.html" %}
+    <button type="button"
+            class="btn btn-outline-primary btn-sm"
+            data-bs-toggle="modal"
+            data-bs-target="#case-history">
+      <i class="bi bi-clock-history" aria-hidden="true"></i> {% translate "History" %} ({{ iterations|length }})
+    </button>
+    <a class="btn btn-outline-secondary btn-sm" href="{% url 'cases' %}">{% translate "Back to the overview" %}</a>
+  </div>
+  <div class="row g-4">
+    <div class="col-12 col-xl-6">
+      <section class="card shadow-sm" aria-labelledby="submitted-form-title">
+        <div class="card-body">
+          <h4 id="submitted-form-title" class="fw-bold">{% translate "Submitted form" %}</h4>
+          <dl class="row small mb-0">
+            <dt class="col-sm-4">{% translate "Form" %}</dt>
+            <dd class="col-sm-8">{{ case.form }}</dd>
+            <dt class="col-sm-4">{% translate "Regulation" %}</dt>
+            <dd class="col-sm-8">{{ case.form.regulation }}</dd>
+            <dt class="col-sm-4">{% translate "Regulator" %}</dt>
+            <dd class="col-sm-8">{{ case.regulator }}</dd>
+            <dt class="col-sm-4">{% translate "Submitter" %}</dt>
+            <dd class="col-sm-8">
+              {{ case.submitter_name }} &lt;{{ case.submitter_email }}&gt;
+              {% if case.company %}<br>{{ case.company.name }}{% endif %}
+            </dd>
+            <dt class="col-sm-4">{% translate "Creation date" %}</dt>
+            <dd class="col-sm-8">{{ case.created_at|date:"SHORT_DATETIME_FORMAT" }}</dd>
+          </dl>
+          <hr>
+          {% for answer in answers %}
+            <div class="mb-3">
+              <div class="fw-bold">{{ answer.question }}</div>
+              <div>
+                {% for choice in answer.choices.all %}
+                  {{ choice }}{% if not forloop.last %}, {% endif %}
+                {% empty %}
+                  {{ answer.answer|default:"—"|linebreaksbr }}
+                {% endfor %}
+              </div>
+            </div>
+          {% endfor %}
+          {% if submission.attachment %}
+            <div class="fw-bold">{% translate "Attachment" %}</div>
+            <a href="{% url 'case_attachment' case.reference submission.uuid %}">
+              <i class="bi bi-paperclip" aria-hidden="true"></i> {{ submission.attachment_name }}
+            </a>
+          {% endif %}
+        </div>
+      </section>
+    </div>
+    <div class="col-12 col-xl-6">
+      <section class="card shadow-sm" aria-labelledby="current-title">
+        <div class="card-body">
+          <h4 id="current-title" class="fw-bold">{% translate "Current situation" %}</h4>
+          {% for step in latest_steps %}
+            {% include "cases/step.html" %}
+          {% endfor %}
+          {% if form %}
+            <h5 class="fw-bold mt-4">
+              {% if user.is_regulator %}
+                {% translate "Your feedback" %}
+              {% else %}
+                {% translate "Answer the revision request" %}
+              {% endif %}
+            </h5>
+            <form method="post" enctype="multipart/form-data" novalidate>
+              {% csrf_token %}
+              {% bootstrap_form form %}
+              <button type="submit" class="btn btn-primary">{% translate "Send" %}</button>
+            </form>
+          {% else %}
+            <p class="alert alert-light border mb-0">
+              {% if case.status == "CLOSED" %}
+                {% translate "This case is closed. No more exchanges are possible." %}
+              {% elif case.status == "UNDER_REVIEW" %}
+                {% translate "The case is under review by the regulator. You can answer if a revision is requested." %}
+              {% else %}
+                {% translate "A revision has been requested. Waiting for the answer of the submitter." %}
+              {% endif %}
+            </p>
+          {% endif %}
+        </div>
+      </section>
+    </div>
+  </div>
+{% endblock %}
+{% block app_modals %}
+  <div class="modal fade"
+       id="case-history"
+       tabindex="-1"
+       aria-labelledby="case-history-title"
+       aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="case-history-title" class="modal-title h5">
+            {% translate "History" %} — {{ case.reference }}
+          </h2>
+          <button type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="{% translate 'Close' %}"></button>
+        </div>
+        <div class="modal-body">
+          {% for iteration in iterations %}
+            <section class="mb-4" aria-labelledby="iteration-{{ iteration.number }}">
+              <h3 id="iteration-{{ iteration.number }}" class="h6 fw-bold">
+                {% blocktranslate with number=iteration.number %}Iteration {{ number }}{% endblocktranslate %}
+              </h3>
+              {% with step=iteration.submission %}
+                {% include "cases/step.html" %}
+              {% endwith %}
+              {% if iteration.feedback %}
+                {% with step=iteration.feedback %}
+                  {% include "cases/step.html" %}
+                {% endwith %}
+              {% else %}
+                <p class="small text-muted">{% translate "Waiting for the feedback of the regulator." %}</p>
+              {% endif %}
+            </section>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

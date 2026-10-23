@@ -1,0 +1,106 @@
+{% extends "cases/base.html" %}
+{% load i18n %}
+{% block content %}
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+    <div>
+      <h3 class="fw-bolder">
+        {% if user.is_regulator %}
+          {% translate "Overview of received cases" %}
+        {% else %}
+          {% translate "My cases" %}
+        {% endif %}
+      </h3>
+      <div class="hr-separator">
+      </div>
+    </div>
+    <form method="get" class="d-inline-flex gap-2" role="search">
+      {% if selected_status %}<input type="hidden" name="status" value="{{ selected_status }}">{% endif %}
+      <label for="case-search" class="visually-hidden">{% translate "Search" %}</label>
+      <input id="case-search"
+             type="search"
+             name="search"
+             value="{{ search }}"
+             class="form-control"
+             placeholder="{% translate 'Reference, name, operator' %}">
+      <button type="submit" class="btn btn-filter-gray">{% translate "Search" %}</button>
+    </form>
+  </div>
+  <ul class="nav nav-pills mb-3" aria-label="{% translate 'Filter by status' %}">
+    <li class="nav-item">
+      <a class="nav-link {% if not selected_status %}active{% endif %}"
+         {% if not selected_status %}aria-current="page"{% endif %}
+         href="?search={{ search|urlencode }}">{% translate "All" %}</a>
+    </li>
+    {% for code, label, count in status_tabs %}
+      <li class="nav-item">
+        <a class="nav-link {% if selected_status == code %}active{% endif %}"
+           {% if selected_status == code %}aria-current="page"{% endif %}
+           href="?status={{ code }}&search={{ search|urlencode }}">{{ label }} <span class="badge text-bg-light">{{ count }}</span></a>
+      </li>
+    {% endfor %}
+  </ul>
+  {% if cases %}
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <caption class="visually-hidden">{% translate "Cases" %}</caption>
+        <thead>
+          <tr>
+            <th scope="col">{% translate "Status" %}</th>
+            <th scope="col">{% translate "Reference" %}</th>
+            <th scope="col">{% translate "Creation date" %}</th>
+            <th scope="col">{% translate "Last update" %}</th>
+            <th scope="col">{% translate "Form" %}</th>
+            <th scope="col">{% translate "Regulation" %}</th>
+            {% if user.is_regulator %}
+              <th scope="col">{% translate "Submitter" %}</th>
+            {% else %}
+              <th scope="col">{% translate "Regulator" %}</th>
+            {% endif %}
+            <th scope="col">{% translate "Actions" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for case in cases %}
+            <tr>
+              <td>{% include "cases/status_badge.html" %}</td>
+              <td class="fw-bold">{{ case.reference }}</td>
+              <td>{{ case.created_at|date:"SHORT_DATETIME_FORMAT" }}</td>
+              <td>{{ case.updated_at|date:"SHORT_DATETIME_FORMAT" }}</td>
+              <td>{{ case.form }}</td>
+              <td>{{ case.form.regulation }}</td>
+              {% if user.is_regulator %}
+                <td>
+                  {{ case.submitter_name }}
+                  {% if case.company %}<br><small class="text-muted">{{ case.company.name }}</small>{% endif %}
+                </td>
+              {% else %}
+                <td>{{ case.regulator }}</td>
+              {% endif %}
+              <td>
+                <a class="btn btn-sm btn-primary"
+                   href="{% url 'case_detail' case.reference %}"
+                   aria-label="{% blocktranslate with reference=case.reference %}Open case {{ reference }}{% endblocktranslate %}">
+                  {% if user.is_regulator %}
+                    {% translate "Process" %}
+                  {% else %}
+                    {% translate "Open" %}
+                  {% endif %}
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="alert alert-light border text-center py-5">
+      <i class="bi bi-folder2-open h1 d-block" aria-hidden="true"></i>
+      {% translate "No case." %}
+      {% if can_submit %}
+        <div class="mt-3">
+          <a class="btn btn-primary" href="{% url 'choose_case_form' %}">{% translate "Submit a case" %}</a>
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+{% endblock %}

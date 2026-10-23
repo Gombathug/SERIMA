@@ -1,0 +1,24 @@
+{% load i18n %}
+<div class="border rounded p-2 mb-2 {% if step.is_from_regulator %}bg-light{% endif %}">
+  <div class="d-flex flex-wrap align-items-center gap-2 small">
+    <span class="fw-bold">
+      {% if step.is_from_regulator %}
+        {% translate "Feedback of the regulator" %}
+      {% elif step.pk == submission.pk %}
+        {% translate "Submitted form" %}
+      {% else %}
+        {% translate "Answer of the submitter" %}
+      {% endif %}
+    </span>
+    {% if step.is_from_regulator %}
+      {% include "cases/status_badge.html" with case=step %}
+    {% endif %}
+    <span class="text-muted ms-auto">{{ step.author_name }} · {{ step.created_at|date:"SHORT_DATETIME_FORMAT" }}</span>
+  </div>
+  {% if step.text %}<div class="mt-1">{{ step.text|linebreaksbr }}</div>{% endif %}
+  {% if step.attachment %}
+    <a href="{% url 'case_attachment' case.reference step.uuid %}">
+      <i class="bi bi-paperclip" aria-hidden="true"></i> {{ step.attachment_name }}
+    </a>
+  {% endif %}
+</div>

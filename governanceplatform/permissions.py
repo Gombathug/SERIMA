@@ -72,6 +72,11 @@ GROUP_PERMISSIONS = {
         "securitymeasure": ["add", "change", "delete", "view"],
         "securityobjectivestatus": ["add", "change", "delete"],
         "logstandardanswer": ["view"],
+        # Case management
+        "casequestion": ["add", "change", "delete"],
+        "casequestionchoice": ["add", "change", "delete"],
+        "caseform": ["add", "change", "delete"],
+        "caseformquestion": ["add", "change", "delete"],
     },
     "RegulatorUser": {
         "user": ["add", "view"],

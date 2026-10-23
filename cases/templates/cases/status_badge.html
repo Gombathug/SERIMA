@@ -1,0 +1,7 @@
+{% load cases_tags %}
+{% with display=status_display|get_item:case.status %}
+  <span class="badge {{ display.0 }} fs-6 fw-normal">
+    <i class="bi {{ display.1 }}" aria-hidden="true"></i>
+    {{ case.get_status_display }}
+  </span>
+{% endwith %}

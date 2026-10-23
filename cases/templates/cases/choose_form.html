@@ -1,0 +1,28 @@
+{% extends "cases/base.html" %}
+{% load i18n %}
+{% block content %}
+  <h3 class="fw-bolder">{% translate "Submit a case" %}</h3>
+  <div class="hr-separator mb-4">
+  </div>
+  {% if case_forms %}
+    <p>{% translate "Choose the form that matches your request." %}</p>
+    <div class="row row-cols-1 row-cols-lg-3 g-4">
+      {% for case_form in case_forms %}
+        <div class="col">
+          <section class="card shadow-sm h-100" aria-labelledby="case-form-{{ case_form.pk }}">
+            <div class="card-body d-flex flex-column">
+              <h4 id="case-form-{{ case_form.pk }}" class="card-title fw-bold">{{ case_form }}</h4>
+              <p class="text-muted small mb-2">{{ case_form.regulation }} · {{ case_form.creator }}</p>
+              <p class="card-text flex-grow-1">{{ case_form.description|linebreaksbr }}</p>
+              <div>
+                <a class="btn btn-primary" href="{% url 'create_case' case_form.pk %}">{% translate "Fill in this form" %}</a>
+              </div>
+            </div>
+          </section>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-light border">{% translate "No form is available at the moment." %}</div>
+  {% endif %}
+{% endblock %}

@@ -3,13 +3,15 @@ from django.utils.translation import gettext_lazy as _
 
 from governanceplatform import __version__
 
+from .globals import BASE_MODULES
 from .helpers import (
     is_observer_user,
     is_user_regulator,
     user_in_group,
 )
 from .models import ApplicationConfig, Functionality
-from .settings import COOKIEBANNER, REGULATOR_CONTACT, SITE_NAME
+from .settings import BASE_MODULES as ENABLED_BASE_MODULES
+from .settings import CASES_MODULE_NAME, COOKIEBANNER, REGULATOR_CONTACT, SITE_NAME
 
 
 def extra_content_for_all_templates(request):
@@ -49,12 +51,9 @@ def instance_configurations(request):
 
 def user_modules(request):
     path = request.path
-    user_modules = [
-        {"type": "incidents", "name": _("Incident notification")},
-    ]
-    module_labels = {
-        "/incidents": _("Incident notification"),
-    }
+    base_module_names = {**BASE_MODULES, "cases": CASES_MODULE_NAME or BASE_MODULES["cases"]}
+    user_modules = [{"type": module, "name": base_module_names[module]} for module in ENABLED_BASE_MODULES]
+    module_labels = {f"/{module['type']}": module["name"] for module in user_modules}
 
     if request.user.is_authenticated:
         app_module_availables = Functionality.objects.filter(type__in=request.user.get_module_permissions()).order_by("id")

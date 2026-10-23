@@ -33,6 +33,7 @@ from .decorators import check_user_is_correct
 from .email import send_html_email
 from .forms import CustomObserverAdminForm, CustomTranslatableAdminForm, FunctionalityAdminForm
 from .formset import CompanyUserInlineFormset
+from .globals import BASE_MODULES
 from .helpers import (
     delete_file_and_parents,
     generate_display_methods,
@@ -90,6 +91,7 @@ class CustomAdminSite(admin.AdminSite):
         Override this method to organize models under custom sections.
         """
         app_list = super().get_app_list(request, app_label)
+        app_list = [app for app in app_list if app["app_label"] not in BASE_MODULES or app["app_label"] in settings.BASE_MODULES]
 
         user = request.user
         has_permission = user.has_perm("governanceplatform.view_scriptlogentry")

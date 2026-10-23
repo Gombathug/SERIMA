@@ -141,6 +141,7 @@ INSTALLED_APPS = [
     "incidents",
     "securityobjectives",
     "reporting",
+    "cases",
     "drf_spectacular",
     "drf_spectacular_sidecar",  # required for Django collectstatic discovery
     "corsheaders",
@@ -556,6 +557,18 @@ try:
     KALEIDO_CONCURRENCY_PER_WORKER = config.KALEIDO_CONCURRENCY_PER_WORKER
 except AttributeError:
     KALEIDO_CONCURRENCY_PER_WORKER = 1
+
+# Base modules shown to every role, in menu order: "incidents" (incident notification)
+# and/or "cases" (case management). A module left out is hidden from the menus and the
+# admin, and its URLs answer 404.
+try:
+    BASE_MODULES = config.BASE_MODULES
+except AttributeError:
+    BASE_MODULES = ["incidents"]
+try:
+    CASES_MODULE_NAME = config.CASES_MODULE_NAME
+except AttributeError:
+    CASES_MODULE_NAME = None
 
 # Paths for deliveries
 # Deliberately not MEDIA_ROOT: this holds generated reports and admin exports of
