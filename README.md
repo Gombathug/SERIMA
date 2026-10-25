@@ -1,3 +1,4 @@
+powershell -ExecutionPolicy Bypass -File demo\start_demo.ps1
 # SERIMA - Governance Platform
 
 [![Latest release](https://img.shields.io/github/release/informed-governance-project/SERIMA.svg?style=flat-square)](https://github.com/informed-governance-project/SERIMA/releases/latest)
