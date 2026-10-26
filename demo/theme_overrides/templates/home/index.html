@@ -1,0 +1,59 @@
+{% extends "home/base.html" %}
+{% load i18n %}
+{% load static %}
+{% load django_bootstrap5 %}
+{% block bootstrap5_extra_script %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'css/index.css' %}" />
+{% endblock %}
+{% block title %}
+  {% translate "Home" %}
+{% endblock %}
+{% block content %}
+  <div id="user-modules-container"
+       class="row row-cols-1
+              {% if user_modules|length > 1 %}
+                row-cols-xl-{{ user_modules|length }}
+              {% else %}
+                row-cols-xl-3
+              {% endif %}
+              d-flex align-items-center justify-content-center h-xl-100 gap-3 gap-xl-0 py-4 px-xl-5">
+    {% for user_module in user_modules %}
+      <div class="col">
+        <div class="card shadow rounded-1 p-3">
+          <div class="card-body d-flex flex-column p-3">
+            <div>
+              {% with "images/icons/ico-"|add:user_module.type|add:".svg" as icon_url %}
+                <img src="{% static icon_url %}"
+                     alt="{{ user_module.name }} icon"
+                     class="icon-module mb-3">
+              {% endwith %}
+              <div class="d-flex flex-column justify-content-end title-container">
+                <h3 class="card-title fw-bolder lh-1 col-auto mb-0">
+                  {{ user_module.name|upper }}
+                </h3>
+              </div>
+            </div>
+            <div class="hr-separator mt-1">
+            </div>
+            <p class="card-text description-container">
+              {% if user_module.type == "incidents" %}
+                {% translate "Report cybersecurity incidents to the competent authority" %}
+              {% elif user_module.type == "cases" %}
+                {% translate "Submit questions, complaints and information requests to the competent authority" %}
+              {% elif user_module.type == "securityobjectives" %}
+                {% translate "A self-assessment module to fulfill security objectives evaluation and provide evidences for security measures in place" %}
+              {% elif user_module.type == "reporting" %}
+                {% translate "Generate annual reports from the security objectives and risk analysis towards informed governance." %}
+              {% endif %}
+            </p>
+            <div class="d-flex">
+              <a class="btn btn-primary spinner-trigger"
+                 href="{% url user_module.type %}">{% translate "Go to dashboard" %}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}

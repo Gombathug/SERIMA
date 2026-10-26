@@ -1,5 +1,8 @@
-powershell -ExecutionPolicy Bypass -File demo\start_demo.ps1
 # SERIMA - Governance Platform
+
+> **Local demo (AI Act - Demo):** on a new computer, see
+> [demo/README.md › Install on a new computer](demo/README.md#install-on-a-new-computer):
+> `powershell -ExecutionPolicy Bypass -File demo\install_demo.ps1`, then `demo\start_demo.ps1`.
 
 [![Latest release](https://img.shields.io/github/release/informed-governance-project/SERIMA.svg?style=flat-square)](https://github.com/informed-governance-project/SERIMA/releases/latest)
 [![License](https://img.shields.io/github/license/informed-governance-project/SERIMA.svg?style=flat-square)](https://www.gnu.org/licenses/agpl-3.0.html)

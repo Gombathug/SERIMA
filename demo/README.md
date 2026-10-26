@@ -69,6 +69,31 @@ Submission ──> Revue en cours ──> RegUser decides ──┬──> Clôt
 Each step sends an email (acknowledgement and decisions to the submitter,
 submissions and answers to `notification@bipt.be`): see `sent_emails/`.
 
+## Install on a new computer
+
+Only the code is in git: PostgreSQL, MSYS2, the Python and npm packages, the theme,
+`config.py` and the database are not. One script rebuilds all of them.
+
+1. Install [Git](https://git-scm.com/download/win), [Python 3.14](https://www.python.org/downloads/)
+   and [Node.js LTS](https://nodejs.org/) (default options).
+2. Clone the repo into an empty folder with enough room (~3 GB): PostgreSQL and
+   MSYS2 go next to the repo, in the same parent folder.
+   ```powershell
+   mkdir D:\SERIMA_test; cd D:\SERIMA_test
+   git clone https://github.com/Gombathug/SERIMA.git
+   cd SERIMA
+   ```
+3. Install (10-20 minutes, downloads ~400 MB), then start:
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File demo\install_demo.ps1
+   powershell -ExecutionPolicy Bypass -File demo\start_demo.ps1
+   ```
+   If Python 3.14 is not found, add `-PythonExe C:\path\to\python.exe`. If a step
+   fails, fix the cause and run the script again: finished steps are skipped.
+
+The data you entered on another computer (forms, cases) does not travel with git:
+every install starts from the demo data of `demo/setup_demo.py`.
+
 ## Daily use
 
 ```powershell
@@ -100,12 +125,14 @@ to show it again.
 | Python venv | `.venv/` | `pip install -r requirements.txt` (+ pytest, ruff) |
 | Front-end packages | `node_modules/` (linked as `static/npm_components`) | `npm ci` |
 | Theme (templates, CSS, images) | `theme/` — IBPT `serimabe-theme`, release v0.6.0 (commit `7672c55`) | all rendered pages come from here |
-| Config | `governanceplatform/config.py` (gitignored) | copy of `config_dev.py` with the local database |
+| Config | `governanceplatform/config.py` (gitignored) | copy of `demo/config_demo.py` (`config_dev.py` with the local database) |
 | PostgreSQL 18 (portable) | `..\pgsql`, data in `..\pgdata` | the code uses PostgreSQL-only queries |
 | MSYS2 (Pango, gettext) | `..\msys64` | WeasyPrint PDF reports, translations |
 
 The theme has two local, uncommitted edits so its login and home pages follow the
 enabled module (`templates/registration/login.html`, `templates/home/index.html`).
+Copies of them live in `demo/theme_overrides/`, which `install_demo.ps1` lays over
+the theme: update them there too when you change them.
 
 ## Switching theme
 
